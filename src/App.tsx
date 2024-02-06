@@ -6,9 +6,10 @@ function App() {
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isTimeRunning, setIsTimeRunning] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(3);
+  const [wrong, setWrong] = useState<number>(0);
+  const [correct, setCorrect] = useState<number>(0);
   const [WPM, setWPM] = useState<number>(0);
   const [accuracy, setAccuracy] = useState<number>(0);
-  const [highScore, setHighScore] = useState<number>(parseInt(localStorage.getItem('highScore') || "0", 10));
   const [duration, setDuration] = useState<number>(60);
 
   useEffect(() => {
@@ -46,18 +47,38 @@ function App() {
     setWPM(0)
     setAccuracy(0)
   }
+  function wordCheck(str1: string, str2: string): boolean {
+    if (str1.length !== str2.length) {
+        return false;
+    }
+    return str1 === str2;
+}
+
+function compare(arr1: string[], arr2: string[]): [number, number] {
+    let wrong = 0;
+    let correct = 0;
+
+    for (let i = 0; i < arr1.length; i++) {
+        if (wordCheck(arr1[i], arr2[i])) {
+            correct += 1;
+        } else {
+            wrong += 1;
+        }
+    }
+    setWrong(wrong)
+    setCorrect(correct)
+
+    return [wrong, correct];
+}
 
   function endGame() {
     setIsTimeRunning(false);
     const wordTyped = text.trim().split(" ").length;
+    compare(text.trim().split(" "),samplePara.trim().split(" "))
     const typeSpeed = (wordTyped/(duration-timeRemaining))*60
     setWPM(Math.round(typeSpeed));
     const accuracyPercentage = ((wordTyped / samplePara.split(" ").length) * 100).toFixed(2);
     setAccuracy(parseFloat(accuracyPercentage));
-    if (wordTyped > highScore) {
-      setHighScore(wordTyped);
-      localStorage.setItem('highScore', wordTyped.toString());
-    }
     
   }
 
@@ -109,6 +130,8 @@ function App() {
           </div>
           <div className=' flex justify-between mt-4'>
             <p>WPM:{WPM}</p>
+            <p>WRONG:{wrong}</p>
+            <p>CORRECT:{correct}</p>
             <p>Accuracy:{accuracy}%</p>
           </div>
         </div>
