@@ -45,6 +45,8 @@ function App() {
     setText("");
     setTimeRemaining(duration)
     setWPM(0)
+    setWrong(0)
+    setCorrect(0)
     setAccuracy(0)
   }
   function wordCheck(str1: string, str2: string): boolean {
